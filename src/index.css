@@ -1,0 +1,10 @@
+@import "tailwindcss";
+@import "antd/dist/reset.css";
+@import "./assets/font/font.css";
+
+body {
+  background: linear-gradient(to bottom left, #a0c9ff, #f2f5fa);
+  background-repeat: no-repeat;
+  background-size: 100%, 100%;
+  background-attachment: fixed;
+}
