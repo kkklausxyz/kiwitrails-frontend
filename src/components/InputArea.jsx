@@ -38,10 +38,10 @@ export default function InputArea({
     setInputContent("");
   };
 
-  // 清空消息
-  const removeAll = () => {
+  // 清空输入框
+  const clearInput = () => {
     if (prohibit) return;
-    onClearAll?.();
+    setInputContent("");
   };
 
   return (
@@ -68,7 +68,7 @@ export default function InputArea({
 
         {/* 底部输入区域 */}
         <div className="input-box-area">
-          <img src={clearIcon} alt="clear" onClick={removeAll} />
+          <img src={clearIcon} alt="clear" onClick={clearInput} />
           <div className="input-content">
             <Input.TextArea
               value={inputContent}
