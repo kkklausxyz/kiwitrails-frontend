@@ -9,6 +9,7 @@ import Loading from "../components/Loading";
 import { sendChatMessage } from "../api/chatService";
 
 export default function Chat() {
+  const [showWelcome, setShowWelcome] = useState(true);
   const [messages, setMessages] = useState([
     {
       role: "assistant",
@@ -24,6 +25,15 @@ export default function Chat() {
 
   const contentRef = useRef(null);
   const lastScrollTopRef = useRef(0);
+
+  // Welcome screen animation effect
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowWelcome(false);
+    }, 2500); // Show welcome screen for 2.5 seconds
+
+    return () => clearTimeout(timer);
+  }, []);
 
   // Stop generation function
   const handleStop = () => {
@@ -165,34 +175,106 @@ export default function Chat() {
 
   return (
     <Layout background="linear-gradient(180deg, #EEF2F7 0%, #F7F9FC 100%)">
-      <div className="content" ref={contentRef} style={{ padding: "0 15px" }}>
-        <IntroParagraph />
-        <DefaultQuestion onSelect={handleSend} disabled={loading} />
-        <ChatMessage messages={messages} />
-        {loading && <Loading text="Generating recommendations…" />}
-        {error && (
-          <div
+      {showWelcome ? (
+        <div
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            alignItems: "center",
+            background: "linear-gradient(180deg, #EEF2F7 0%, #F7F9FC 100%)",
+            zIndex: 9999,
+            animation: "fadeOut 0.5s ease-out 2s forwards",
+          }}
+        >
+          <h1
             style={{
-              backgroundColor: "#ffebee",
-              color: "#c62828",
-              padding: "10px",
-              borderRadius: "5px",
-              margin: "10px 0",
-              fontSize: "14px",
+              fontSize: "32px",
+              fontWeight: 700,
+              color: "#4d7cd6",
+              marginBottom: "16px",
+              animation: "fadeInUp 0.8s ease-out",
             }}
           >
-            ⚠️ {error}
+            Hi, I'm KiwiTrails
+          </h1>
+          <p
+            style={{
+              fontSize: "18px",
+              color: "#333",
+              textAlign: "center",
+              maxWidth: "600px",
+              padding: "0 20px",
+              lineHeight: 1.6,
+              animation: "fadeInUp 0.8s ease-out 0.3s backwards",
+            }}
+          >
+            Your personal travel assistant for exploring New Zealand
+          </p>
+        </div>
+      ) : (
+        <>
+          <div
+            className="content"
+            ref={contentRef}
+            style={{ padding: "0 15px" }}
+          >
+            <IntroParagraph />
+            <DefaultQuestion onSelect={handleSend} disabled={loading} />
+            <ChatMessage messages={messages} />
+            {loading && <Loading text="Generating recommendations…" />}
+            {error && (
+              <div
+                style={{
+                  backgroundColor: "#ffebee",
+                  color: "#c62828",
+                  padding: "10px",
+                  borderRadius: "5px",
+                  margin: "10px 0",
+                  fontSize: "14px",
+                }}
+              >
+                ⚠️ {error}
+              </div>
+            )}
           </div>
-        )}
-      </div>
 
-      <InputArea
-        onSend={handleSend}
-        onStop={handleStop}
-        prohibit={loading}
-        isGenerating={isGenerating}
-      />
-      <div style={{ height: 300 }} />
+          <InputArea
+            onSend={handleSend}
+            onStop={handleStop}
+            prohibit={loading}
+            isGenerating={isGenerating}
+          />
+          <div style={{ height: 300 }} />
+        </>
+      )}
+      <style>{`
+        @keyframes fadeInUp {
+          from {
+            opacity: 0;
+            transform: translateY(20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+        
+        @keyframes fadeOut {
+          from {
+            opacity: 1;
+          }
+          to {
+            opacity: 0;
+            visibility: hidden;
+          }
+        }
+      `}</style>
     </Layout>
   );
 }
