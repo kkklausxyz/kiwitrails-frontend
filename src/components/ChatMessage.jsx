@@ -72,35 +72,17 @@ export default function ChatMessage({ messages = [] }) {
             {/* 大模型回复 */}
             {isAssistant && (
               <div className="ai-message">
-                {/* 通义风格：纯 markdown 文本 */}
-                {!item.progress && item.modelType === "tongyi" && (
-                  <div
-                    className="mark-text"
-                    dangerouslySetInnerHTML={{
-                      __html: marked(item.content || ""),
-                    }}
-                  />
-                )}
-
-                {/* DeepSeek 风格：上面“推理/行动”，下面正式回答 */}
-                {!item.progress && item.modelType === "deepseek" && (
+                {/* 通用AI回复显示 */}
+                {!item.progress && (
                   <div className="mark-text">
-                    <span>Reasoning &amp; Actions</span>
-                    {item.content ? (
-                      <div
-                        className="deepseek-reasoning"
-                        dangerouslySetInnerHTML={{
-                          __html: marked(item.content || ""),
-                        }}
-                      />
-                    ) : null}
-                    {item.deepSeekContent ? (
-                      <div
-                        dangerouslySetInnerHTML={{
-                          __html: marked(item.deepSeekContent || ""),
-                        }}
-                      />
-                    ) : null}
+                    <div
+                      dangerouslySetInnerHTML={{
+                        __html: marked(item.content || "", {
+                          breaks: true, // 启用换行符支持
+                          gfm: true, // 启用GitHub风格Markdown
+                        }),
+                      }}
+                    />
                   </div>
                 )}
 
@@ -161,14 +143,50 @@ const cssText = `
 }
 .chat-message .ai-message .mark-text {
   font-size: 16px;
-  line-height: 1.5;
+  line-height: 1.6;
   background-color: #ffffff;
   border-top-right-radius: 10px;
   border-bottom-right-radius: 10px;
   border-bottom-left-radius: 10px;
   color: #333;
-  padding: 5px;
+  padding: 12px;
+  white-space: pre-wrap; /* 保持换行和空格 */
 }
+
+/* Markdown样式 */
+.chat-message .ai-message .mark-text h1,
+.chat-message .ai-message .mark-text h2,
+.chat-message .ai-message .mark-text h3,
+.chat-message .ai-message .mark-text h4,
+.chat-message .ai-message .mark-text h5,
+.chat-message .ai-message .mark-text h6 {
+  margin: 12px 0 8px 0;
+  font-weight: bold;
+}
+
+.chat-message .ai-message .mark-text p {
+  margin: 8px 0;
+}
+
+.chat-message .ai-message .mark-text ul,
+.chat-message .ai-message .mark-text ol {
+  margin: 8px 0;
+  padding-left: 20px;
+}
+
+.chat-message .ai-message .mark-text li {
+  margin: 4px 0;
+}
+
+.chat-message .ai-message .mark-text strong {
+  font-weight: bold;
+}
+
+.chat-message .ai-message .mark-text em {
+  font-style: italic;
+}
+
+
 .chat-message .ai-message .mark-text .deepseek-reasoning {
   background-color: #f2f4f9;
   padding: 8px;
