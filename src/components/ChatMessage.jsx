@@ -89,7 +89,7 @@ export default function ChatMessage({ messages = [] }) {
                 {/* 加载中 */}
                 {item.progress && (
                   <div className="mark-text">
-                    <Loading text="Generating recommendations…" />
+                    <Loading text="KiwiTrails is thinking…" />
                   </div>
                 )}
               </div>
