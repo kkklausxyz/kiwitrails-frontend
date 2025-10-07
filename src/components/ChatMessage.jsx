@@ -143,7 +143,7 @@ const cssText = `
 }
 .chat-message .ai-message .mark-text {
   font-size: 16px;
-  line-height: 1.6;
+  line-height: 1.2;
   background-color: #ffffff;
   border-top-right-radius: 10px;
   border-bottom-right-radius: 10px;
@@ -160,22 +160,22 @@ const cssText = `
 .chat-message .ai-message .mark-text h4,
 .chat-message .ai-message .mark-text h5,
 .chat-message .ai-message .mark-text h6 {
-  margin: 12px 0 8px 0;
+  margin: 4px 0 2px 0;
   font-weight: bold;
 }
 
 .chat-message .ai-message .mark-text p {
-  margin: 8px 0;
+  margin: 2px 0;
 }
 
 .chat-message .ai-message .mark-text ul,
 .chat-message .ai-message .mark-text ol {
-  margin: 8px 0;
+  margin: 2px 0;
   padding-left: 20px;
 }
 
 .chat-message .ai-message .mark-text li {
-  margin: 4px 0;
+  margin: 1px 0;
 }
 
 .chat-message .ai-message .mark-text strong {
@@ -190,13 +190,13 @@ const cssText = `
 .chat-message .ai-message .mark-text .deepseek-reasoning {
   background-color: #f2f4f9;
   padding: 8px;
-  margin: 8px 0;
+  margin: 2px 0;
   border-radius: 10px;
   font-size: 14px;
 }
 .chat-message .ai-message .mark-text .deepseek-reasoning p {
   font-size: 14px !important;
   color: #343761;
-  margin: 0 0 8px 0;
+  margin: 0 0 2px 0;
 }
 `;

@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import throttle from "lodash/throttle";
+import Layout from "../components/Layout";
 import IntroParagraph from "../components/IntroParagraph";
 import DefaultQuestion from "../components/DefaultQuestion";
 import ChatMessage from "../components/ChatMessage";
@@ -163,7 +164,7 @@ export default function Chat() {
   };
 
   return (
-    <>
+    <Layout background="linear-gradient(180deg, #EEF2F7 0%, #F7F9FC 100%)">
       <div className="content" ref={contentRef} style={{ padding: "0 15px" }}>
         <IntroParagraph />
         <DefaultQuestion onSelect={handleSend} disabled={loading} />
@@ -192,6 +193,6 @@ export default function Chat() {
         isGenerating={isGenerating}
       />
       <div style={{ height: 300 }} />
-    </>
+    </Layout>
   );
 }

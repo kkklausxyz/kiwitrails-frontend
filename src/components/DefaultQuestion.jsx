@@ -1,7 +1,8 @@
 import React, { useMemo, useState } from "react";
 
 // ⬇️ 根据你的目录调整路径（示例为 src/assets/...）
-import kefuImg from "../assets/kefu.png";
+import { Avatar } from "antd";
+import { RobotOutlined } from "@ant-design/icons";
 import questionIcon from "../assets/wenti.png";
 import shuffleIcon from "../assets/huanyihuan.png";
 
@@ -56,7 +57,11 @@ export default function DefaultQuestion({ onSelect, disabled = false }) {
     <>
       {/* 顶部客服信息 */}
       <div className="support-agent" style={styles.supportAgent}>
-        <img src={kefuImg} alt="agent" style={styles.agentImg} />
+        <Avatar
+          size={35}
+          icon={<RobotOutlined />}
+          style={{ backgroundColor: "#3a71e8" }}
+        />
         <p style={styles.agentName}>KiwiTrails</p>
       </div>
 

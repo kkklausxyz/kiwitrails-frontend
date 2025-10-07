@@ -105,43 +105,71 @@ export default function InputArea({
 const cssText = `
 .input-container {
   position: fixed;
-  left: 0;
-  right: 0;
+  left: 50%;
+  transform: translateX(-50%);
   bottom: 0;
+  width: 100%;
+  max-width: 1200px;
+  background-color: #ffffff;
+  z-index: 1000;
 }
+
 .input-container .data-query {
   display: flex;
   align-items: center;
+  padding: 0 15px;
 }
+
 .input-container .data-query .ant-btn {
   margin-left: 15px;
   margin-bottom: 5px;
   opacity: 1;
 }
+
 .input-container .input-box-area {
   background-color: #ffffff;
   display: flex;
   align-items: center;
-  padding-bottom: 20px;
-  padding-top: 5px;
+  padding: 5px 15px 20px 15px;
+  border-top: 1px solid #f0f0f0;
 }
+
 .input-container .input-box-area img {
   width: 27px;
   height: 27px;
   margin: 0 10px;
   cursor: pointer;
 }
+
 .input-container .input-box-area .input-content {
   background-color: #f8f9fd;
   flex: 1;
   border-radius: 10px;
   padding: 6px;
 }
+
 .input-container .input-box-area .send-button {
   border: none;
   font-size: 15px;
   color: #3a71e8;
   font-weight: bold;
   margin: 0 5px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1280px) {
+  .input-container {
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 768px) {
+  .input-container .input-box-area {
+    padding: 5px 10px 20px 10px;
+  }
+  
+  .input-container .data-query {
+    padding: 0 10px;
+  }
 }
 `;
