@@ -79,6 +79,8 @@ export default function InputArea({
               style={{
                 backgroundColor: "transparent",
                 padding: 0,
+                // Prevent iOS auto-zoom on focus
+                fontSize: 16,
               }}
             />
           </div>
