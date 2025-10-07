@@ -33,10 +33,11 @@ const styles = {
     fontSize: 20,
     color: "#4d7cd6",
     fontFamily: '"NAME"', // keep same font if you have it imported
+    fontWeight: 700,
     margin: 0,
   },
   introSection: {
-    fontWeight: "bold",
+    fontWeight: "normal",
     lineHeight: 2,
     margin: 0,
   },
