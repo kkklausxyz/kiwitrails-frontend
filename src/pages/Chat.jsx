@@ -227,7 +227,7 @@ export default function Chat() {
             <IntroParagraph />
             <DefaultQuestion onSelect={handleSend} disabled={loading} />
             <ChatMessage messages={messages} />
-            {loading && <Loading text="Generating recommendations…" />}
+            {loading && <Loading text="KiwiTrails is thinking…" />}
             {error && (
               <div
                 style={{
