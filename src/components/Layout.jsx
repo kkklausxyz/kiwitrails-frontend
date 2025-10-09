@@ -1,4 +1,5 @@
 import React from "react";
+import Navbar from "./Navbar";
 
 /**
  * Layout Component
@@ -8,7 +9,12 @@ import React from "react";
  * - children: React nodes to be rendered inside the layout
  * - maxWidth?: string - Maximum width of the container (default: "1200px")
  */
-export default function Layout({ children, maxWidth = "1200px", background }) {
+export default function Layout({
+  children,
+  maxWidth = "1160px",
+  background,
+  showNavbar = true,
+}) {
   return (
     <>
       <style>{styles}</style>
@@ -19,6 +25,7 @@ export default function Layout({ children, maxWidth = "1200px", background }) {
             background || "linear-gradient(180deg, #EEF2F7 0%, #F7F9FC 100%)",
         }}
       >
+        {showNavbar && <Navbar />}
         <div className="app-container" style={{ maxWidth }}>
           {children}
         </div>
@@ -32,16 +39,16 @@ const styles = `
   width: 100%;
   min-height: 100vh;
   display: flex;
-  justify-content: center;
+  flex-direction: column;
 }
 
 .app-container {
   width: 100%;
-  max-width: 1200px;
+  max-width: 1160px;
   margin: 0 auto;
-  background-color:rgb(171, 219, 243);
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.05);
+  background-color: transparent;
   position: relative;
+  flex: 1;
 }
 
 /* Responsive adjustments */

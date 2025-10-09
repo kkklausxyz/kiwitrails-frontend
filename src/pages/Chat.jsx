@@ -1,8 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 import throttle from "lodash/throttle";
 import Layout from "../components/Layout";
-import IntroParagraph from "../components/IntroParagraph";
-import DefaultQuestion from "../components/DefaultQuestion";
+import ChatHeader from "../components/ChatHeader";
+import SuggestionChips from "../components/SuggestionChips";
+import ContentCards from "../components/ContentCards";
 import ChatMessage from "../components/ChatMessage";
 import InputArea from "../components/InputArea";
 import Loading from "../components/Loading";
@@ -15,6 +16,11 @@ export default function Chat() {
       role: "assistant",
       content:
         "Kia ora! I'm your New Zealand travel guide. Tell me your dates, budget, transport, and interests, and I'll plan a route.",
+      timestamp: new Date().toLocaleTimeString("en-US", {
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: true,
+      }),
     },
   ]);
   const [userScrolled, setUserScrolled] = useState(false);
@@ -25,6 +31,7 @@ export default function Chat() {
 
   const contentRef = useRef(null);
   const lastScrollTopRef = useRef(0);
+  const inputRef = useRef(null);
 
   // Welcome screen animation effect
   useEffect(() => {
@@ -70,6 +77,14 @@ export default function Chat() {
     };
   }, []);
 
+  // Handle suggestion chip clicks - populate input field
+  const handleSuggestionClick = (text) => {
+    // This will be passed to InputArea to populate the input field
+    if (inputRef.current) {
+      inputRef.current.setValue(text);
+    }
+  };
+
   // unified send handler (for default questions & input)
   const handleSend = async (text) => {
     if (!text?.trim()) return;
@@ -92,7 +107,18 @@ export default function Chat() {
 
       // Add user message to state first
       setMessages((prevMessages) => {
-        const newMessages = [...prevMessages, { role: "user", content: text }];
+        const newMessages = [
+          ...prevMessages,
+          {
+            role: "user",
+            content: text,
+            timestamp: new Date().toLocaleTimeString("en-US", {
+              hour: "2-digit",
+              minute: "2-digit",
+              hour12: true,
+            }),
+          },
+        ];
         return newMessages;
       });
 
@@ -105,6 +131,11 @@ export default function Chat() {
           {
             role: "assistant",
             content: "",
+            timestamp: new Date().toLocaleTimeString("en-US", {
+              hour: "2-digit",
+              minute: "2-digit",
+              hour12: true,
+            }),
           },
         ];
         return newMessages;
@@ -144,6 +175,11 @@ export default function Chat() {
             role: "assistant",
             content:
               "Sorry, the service is temporarily unavailable. Please try again later.",
+            timestamp: new Date().toLocaleTimeString("en-US", {
+              hour: "2-digit",
+              minute: "2-digit",
+              hour12: true,
+            }),
           },
         ]);
       }
@@ -164,6 +200,11 @@ export default function Chat() {
           role: "assistant",
           content:
             "Sorry, the service is temporarily unavailable. Please try again later.",
+          timestamp: new Date().toLocaleTimeString("en-US", {
+            hour: "2-digit",
+            minute: "2-digit",
+            hour12: true,
+          }),
         },
       ]);
     } finally {
@@ -174,7 +215,7 @@ export default function Chat() {
   };
 
   return (
-    <Layout background="linear-gradient(180deg, #EEF2F7 0%, #F7F9FC 100%)">
+    <Layout background="#f5f5f5" showNavbar={!showWelcome}>
       {showWelcome ? (
         <div
           style={{
@@ -218,40 +259,59 @@ export default function Chat() {
           </p>
         </div>
       ) : (
-        <>
-          <div
-            className="content"
-            ref={contentRef}
-            style={{ padding: "0 15px" }}
-          >
-            <IntroParagraph />
-            <DefaultQuestion onSelect={handleSend} disabled={loading} />
-            <ChatMessage messages={messages} />
-            {loading && <Loading text="KiwiTrails is thinking…" />}
-            {error && (
+        <div className="main-content-wrapper" style={styles.mainContentWrapper}>
+          <div className="main-container" style={styles.mainContainer}>
+            {/* Left Column - Chat Interface */}
+            <div className="chat-column" style={styles.chatColumn}>
               <div
-                style={{
-                  backgroundColor: "#ffebee",
-                  color: "#c62828",
-                  padding: "10px",
-                  borderRadius: "5px",
-                  margin: "10px 0",
-                  fontSize: "14px",
-                }}
+                className="chat-interface-container"
+                style={styles.chatInterfaceContainer}
               >
-                ⚠️ {error}
-              </div>
-            )}
-          </div>
+                <ChatHeader />
+                <SuggestionChips
+                  onSelect={handleSuggestionClick}
+                  disabled={loading}
+                />
 
-          <InputArea
-            onSend={handleSend}
-            onStop={handleStop}
-            prohibit={loading}
-            isGenerating={isGenerating}
-          />
-          <div style={{ height: 300 }} />
-        </>
+                <div
+                  className="content"
+                  ref={contentRef}
+                  style={styles.chatContent}
+                >
+                  <ChatMessage messages={messages} />
+                  {loading && <Loading text="KiwiTrails is thinking…" />}
+                  {error && (
+                    <div
+                      style={{
+                        backgroundColor: "#ffebee",
+                        color: "#c62828",
+                        padding: "10px",
+                        borderRadius: "5px",
+                        margin: "10px 0",
+                        fontSize: "14px",
+                      }}
+                    >
+                      ⚠️ {error}
+                    </div>
+                  )}
+                </div>
+
+                <InputArea
+                  ref={inputRef}
+                  onSend={handleSend}
+                  onStop={handleStop}
+                  prohibit={loading}
+                  isGenerating={isGenerating}
+                />
+              </div>
+            </div>
+
+            {/* Right Column - Content Cards */}
+            <div className="sidebar-column" style={styles.sidebarColumn}>
+              <ContentCards />
+            </div>
+          </div>
+        </div>
       )}
       <style>{`
         @keyframes fadeInUp {
@@ -274,7 +334,81 @@ export default function Chat() {
             visibility: hidden;
           }
         }
+        
+        /* Responsive styles */
+        @media (max-width: 1024px) {
+          .main-content-wrapper {
+            padding: 10px !important;
+          }
+          
+          .main-container {
+            flex-direction: column !important;
+            height: auto !important;
+            min-height: calc(100vh - 80px) !important;
+            gap: 15px !important;
+          }
+          
+          .chat-column {
+            order: 2 !important;
+            min-height: 60vh !important;
+          }
+          
+          .chat-interface-container {
+            min-height: 60vh !important;
+          }
+          
+          .sidebar-column {
+            order: 1 !important;
+            min-height: auto !important;
+            max-height: none !important;
+            padding: 20px !important;
+          }
+        }
       `}</style>
     </Layout>
   );
 }
+
+const styles = {
+  mainContentWrapper: {
+    padding: "20px",
+    maxWidth: "1160px",
+    margin: "0 auto",
+  },
+  mainContainer: {
+    display: "flex",
+    height: "calc(100vh - 100px)", // Subtract navbar height and padding
+    gap: "20px",
+  },
+  chatColumn: {
+    flex: "2",
+    display: "flex",
+    flexDirection: "column",
+  },
+  chatInterfaceContainer: {
+    backgroundColor: "#ffffff",
+    borderRadius: "12px",
+    boxShadow: "0 2px 12px rgba(0, 0, 0, 0.08)",
+    border: "1px solid #e5e5e7",
+    height: "100%",
+    display: "flex",
+    flexDirection: "column",
+    overflow: "hidden",
+  },
+  chatContent: {
+    flex: "1",
+    overflowY: "auto",
+    padding: "0 20px",
+    paddingBottom: "20px",
+  },
+  sidebarColumn: {
+    flex: "1",
+    padding: "20px",
+    backgroundColor: "#ffffff",
+    minHeight: "calc(100vh - 100px)",
+    overflowY: "auto",
+    borderRadius: "12px",
+    boxShadow: "0 2px 12px rgba(0, 0, 0, 0.08)",
+    border: "1px solid #e5e5e7",
+  },
+};

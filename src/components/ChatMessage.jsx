@@ -39,11 +39,21 @@ export default function ChatMessage({ messages = [] }) {
             {/* 用户文本 */}
             {isUser && (
               <div className="user-message">
-                {isArrayContent ? (
-                  <p>{item?.content?.[0]?.text || ""}</p>
-                ) : (
-                  <p>{item?.content || ""}</p>
-                )}
+                <div className="message-bubble user-bubble">
+                  {isArrayContent ? (
+                    <p>{item?.content?.[0]?.text || ""}</p>
+                  ) : (
+                    <p>{item?.content || ""}</p>
+                  )}
+                </div>
+                <div className="message-time">
+                  {item.timestamp ||
+                    new Date().toLocaleTimeString("en-US", {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                      hour12: true,
+                    })}
+                </div>
               </div>
             )}
 
@@ -72,26 +82,36 @@ export default function ChatMessage({ messages = [] }) {
             {/* 大模型回复 */}
             {isAssistant && (
               <div className="ai-message">
-                {/* 通用AI回复显示 */}
-                {!item.progress && (
-                  <div className="mark-text">
-                    <div
-                      dangerouslySetInnerHTML={{
-                        __html: marked(item.content || "", {
-                          breaks: true, // 启用换行符支持
-                          gfm: true, // 启用GitHub风格Markdown
-                        }),
-                      }}
-                    />
-                  </div>
-                )}
+                <div className="message-bubble ai-bubble">
+                  {/* 通用AI回复显示 */}
+                  {!item.progress && (
+                    <div className="mark-text">
+                      <div
+                        dangerouslySetInnerHTML={{
+                          __html: marked(item.content || "", {
+                            breaks: true, // 启用换行符支持
+                            gfm: true, // 启用GitHub风格Markdown
+                          }),
+                        }}
+                      />
+                    </div>
+                  )}
 
-                {/* 加载中 */}
-                {item.progress && (
-                  <div className="mark-text">
-                    <Loading text="KiwiTrails is thinking…" />
-                  </div>
-                )}
+                  {/* 加载中 */}
+                  {item.progress && (
+                    <div className="mark-text">
+                      <Loading text="KiwiTrails is thinking…" />
+                    </div>
+                  )}
+                </div>
+                <div className="message-time">
+                  {item.timestamp ||
+                    new Date().toLocaleTimeString("en-US", {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                      hour12: true,
+                    })}
+                </div>
               </div>
             )}
           </div>
@@ -114,17 +134,30 @@ const cssText = `
   opacity: 0;
   transform: translateY(20px);
   animation: fadeUp 0.2s ease-in-out forwards;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+.chat-message .user-message .message-bubble {
+  background-color: #f0f0f0;
+  border-radius: 18px;
+  padding: 12px 16px;
+  margin-bottom: 4px;
+  max-width: 100%;
+}
+.chat-message .user-message .user-bubble {
+  background-color: #f0f0f0;
 }
 .chat-message .user-message p {
   font-size: 16px;
   line-height: 1.5;
-  background-color: #3a71e8;
-  border-bottom-left-radius: 10px;
-  border-top-left-radius: 10px;
-  border-bottom-right-radius: 10px;
-  color: #ffffff;
-  padding: 5px;
+  color: #333;
   margin: 0;
+}
+.chat-message .user-message .message-time {
+  font-size: 12px;
+  color: #999;
+  margin-top: 4px;
 }
 .chat-message .send-image {
   display: flex;
@@ -140,17 +173,30 @@ const cssText = `
 .chat-message .ai-message {
   margin-top: 15px;
   align-self: flex-start;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+.chat-message .ai-message .message-bubble {
+  background-color: #e8f5e8;
+  border-radius: 18px;
+  padding: 12px 16px;
+  margin-bottom: 4px;
+  max-width: 100%;
+}
+.chat-message .ai-message .ai-bubble {
+  background-color: #e8f5e8;
 }
 .chat-message .ai-message .mark-text {
   font-size: 16px;
   line-height: 1.2;
-  background-color: #ffffff;
-  border-top-right-radius: 10px;
-  border-bottom-right-radius: 10px;
-  border-bottom-left-radius: 10px;
   color: #333;
-  padding: 12px;
   white-space: pre-wrap; /* 保持换行和空格 */
+}
+.chat-message .ai-message .message-time {
+  font-size: 12px;
+  color: #999;
+  margin-top: 4px;
 }
 
 /* Markdown样式 */
