@@ -83,8 +83,18 @@ export default function ChatMessage({ messages = [] }) {
             {isAssistant && (
               <div className="ai-message">
                 <div className="message-bubble ai-bubble">
+                  {/* 思考中状态 */}
+                  {item.thinking && !item.content && (
+                    <div className="thinking-text">KiwiTrails is thinking…</div>
+                  )}
+
+                  {/* 错误状态 */}
+                  {item.error && item.content && (
+                    <div className="error-text">{item.content}</div>
+                  )}
+
                   {/* 通用AI回复显示 */}
-                  {!item.progress && (
+                  {!item.thinking && !item.error && item.content && (
                     <div className="mark-text">
                       <div
                         dangerouslySetInnerHTML={{
@@ -94,13 +104,6 @@ export default function ChatMessage({ messages = [] }) {
                           }),
                         }}
                       />
-                    </div>
-                  )}
-
-                  {/* 加载中 */}
-                  {item.progress && (
-                    <div className="mark-text">
-                      <Loading text="KiwiTrails is thinking…" />
                     </div>
                   )}
                 </div>
@@ -192,6 +195,16 @@ const cssText = `
   line-height: 1.2;
   color: #333;
   white-space: pre-wrap; /* 保持换行和空格 */
+}
+.chat-message .ai-message .thinking-text {
+  font-size: 14px;
+  color: #999;
+  font-style: italic;
+}
+.chat-message .ai-message .error-text {
+  font-size: 14px;
+  color: #d32f2f;
+  font-weight: 500;
 }
 .chat-message .ai-message .message-time {
   font-size: 12px;

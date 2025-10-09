@@ -131,6 +131,7 @@ export default function Chat() {
           {
             role: "assistant",
             content: "",
+            thinking: true,
             timestamp: new Date().toLocaleTimeString("en-US", {
               hour: "2-digit",
               minute: "2-digit",
@@ -156,6 +157,7 @@ export default function Chat() {
             if (lastMessage && lastMessage.role === "assistant") {
               // Use accumulated content to avoid duplication
               lastMessage.content = accumulatedContent;
+              lastMessage.thinking = false; // Stop showing thinking message
             }
             return newMessages;
           });
@@ -167,21 +169,19 @@ export default function Chat() {
       } else if (result.aborted) {
         // User actively cancelled, don't show error message
       } else {
-        // API call failed, show error message
+        // API call failed, update the existing thinking message with error
         setError(result.error || "Network request failed");
-        setMessages((prev) => [
-          ...prev,
-          {
-            role: "assistant",
-            content:
-              "Sorry, the service is temporarily unavailable. Please try again later.",
-            timestamp: new Date().toLocaleTimeString("en-US", {
-              hour: "2-digit",
-              minute: "2-digit",
-              hour12: true,
-            }),
-          },
-        ]);
+        setMessages((prev) => {
+          const newMessages = [...prev];
+          const lastMessage = newMessages[newMessages.length - 1];
+          if (lastMessage && lastMessage.role === "assistant") {
+            lastMessage.content =
+              "Sorry, the service is temporarily unavailable. Please try again later.";
+            lastMessage.thinking = false;
+            lastMessage.error = true;
+          }
+          return newMessages;
+        });
       }
     } catch (error) {
       console.error("Failed to send message:", error);
@@ -194,19 +194,17 @@ export default function Chat() {
 
       // Only show error message for real errors
       setError("Failed to send message, please check your network connection");
-      setMessages((prev) => [
-        ...prev,
-        {
-          role: "assistant",
-          content:
-            "Sorry, the service is temporarily unavailable. Please try again later.",
-          timestamp: new Date().toLocaleTimeString("en-US", {
-            hour: "2-digit",
-            minute: "2-digit",
-            hour12: true,
-          }),
-        },
-      ]);
+      setMessages((prev) => {
+        const newMessages = [...prev];
+        const lastMessage = newMessages[newMessages.length - 1];
+        if (lastMessage && lastMessage.role === "assistant") {
+          lastMessage.content =
+            "Sorry, the service is temporarily unavailable. Please try again later.";
+          lastMessage.thinking = false;
+          lastMessage.error = true;
+        }
+        return newMessages;
+      });
     } finally {
       setLoading(false);
       setIsGenerating(false);
@@ -279,7 +277,6 @@ export default function Chat() {
                   style={styles.chatContent}
                 >
                   <ChatMessage messages={messages} />
-                  {loading && <Loading text="KiwiTrails is thinking…" />}
                   {error && (
                     <div
                       style={{
