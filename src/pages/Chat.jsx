@@ -57,24 +57,58 @@ export default function Chat() {
     if (userScrolled) return;
     const contentEl = contentRef.current;
     if (!contentEl) return;
-    window.scrollTo({ top: contentEl.scrollHeight, behavior: "smooth" });
+
+    // Scroll the chat content area to bottom
+    contentEl.scrollTo({
+      top: contentEl.scrollHeight,
+      behavior: "smooth",
+    });
   }, [messages, userScrolled]);
+
+  // Auto-scroll during content generation for mobile
+  useEffect(() => {
+    if (!isGenerating || userScrolled) return;
+
+    const interval = setInterval(() => {
+      const contentEl = contentRef.current;
+      if (!contentEl) return;
+
+      contentEl.scrollTo({
+        top: contentEl.scrollHeight,
+        behavior: "smooth",
+      });
+    }, 300); // Check every 300ms during generation
+
+    return () => clearInterval(interval);
+  }, [isGenerating, userScrolled]);
 
   // Debug message changes
 
   // detect upward scroll => freeze auto-scroll
   useEffect(() => {
     const handleScroll = () => {
-      const y = window.scrollY || 0;
-      if (y <= lastScrollTopRef.current) setUserScrolled(true);
-      lastScrollTopRef.current = y;
+      const contentEl = contentRef.current;
+      if (!contentEl) return;
+
+      const scrollTop = contentEl.scrollTop;
+      const scrollHeight = contentEl.scrollHeight;
+      const clientHeight = contentEl.clientHeight;
+
+      // If user is near the bottom (within 100px), allow auto-scroll
+      if (scrollHeight - scrollTop - clientHeight < 100) {
+        setUserScrolled(false);
+      } else {
+        setUserScrolled(true);
+      }
     };
-    const throttled = throttle(handleScroll, 300);
-    window.addEventListener("scroll", throttled);
-    return () => {
-      window.removeEventListener("scroll", throttled);
-      throttled.cancel?.();
-    };
+
+    const contentEl = contentRef.current;
+    if (contentEl) {
+      contentEl.addEventListener("scroll", handleScroll);
+      return () => {
+        contentEl.removeEventListener("scroll", handleScroll);
+      };
+    }
   }, []);
 
   // Handle suggestion chip clicks - populate input field
@@ -344,21 +378,21 @@ export default function Chat() {
           .main-content-wrapper {
             padding: 10px !important;
           }
-          
+
           .main-container {
             flex-direction: column !important;
             height: auto !important;
-            min-height: calc(100vh - 80px) !important;
+            min-height: calc(100vh - 60px) !important;
             gap: 15px !important;
           }
           
           .chat-column {
             order: 2 !important;
-            min-height: 60vh !important;
+            min-height: 75vh !important;
           }
           
           .chat-interface-container {
-            min-height: 60vh !important;
+            min-height: 75vh !important;
           }
           
           .sidebar-column {
@@ -366,6 +400,56 @@ export default function Chat() {
             min-height: auto !important;
             max-height: none !important;
             padding: 20px !important;
+          }
+        }
+        
+        /* Additional mobile optimizations */
+        @media (max-width: 768px) {
+          .chat-interface-container {
+            min-height: 80vh !important;
+            max-height: 80vh !important;
+            position: relative !important;
+            display: flex !important;
+            flex-direction: column !important;
+          }
+          
+          .main-content-wrapper {
+            padding: 5px !important;
+          }
+          
+          /* Fix suggestion chips from being squeezed */
+          .chat-interface-container > div:first-of-type {
+            flex-shrink: 0 !important;
+            min-height: auto !important;
+          }
+          
+          /* Ensure suggestion chips container is stable */
+          .chat-interface-container > div:nth-of-type(2) {
+            flex-shrink: 0 !important;
+            min-height: auto !important;
+            max-height: 80px !important;
+            overflow: hidden !important;
+          }
+          
+          /* Enhanced mobile scrolling */
+          .content {
+            -webkit-overflow-scrolling: touch !important;
+            scroll-behavior: smooth !important;
+            overscroll-behavior: contain !important;
+            max-height: calc(80vh - 200px) !important;
+            overflow-y: auto !important;
+            flex: 1 !important;
+            min-height: 0 !important;
+          }
+          
+          /* Keep input area visible and fixed */
+          .input-container {
+            position: sticky !important;
+            bottom: 0 !important;
+            z-index: 1000 !important;
+            background: white !important;
+            border-top: 1px solid #e5e5e7 !important;
+            flex-shrink: 0 !important;
           }
         }
       `}</style>
@@ -398,6 +482,7 @@ const styles = {
     display: "flex",
     flexDirection: "column",
     overflow: "hidden",
+    minHeight: 0, // Allow flex shrinking
   },
   chatContent: {
     flex: "1",
