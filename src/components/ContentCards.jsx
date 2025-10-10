@@ -1,32 +1,47 @@
 import React from "react";
+import southIslandImage from "../assets/south_island.JPG";
+import northIslandImage from "../assets/north_island.jpg";
+import aucklandImage from "../assets/auckland.jpg";
 
-export default function ContentCards() {
+export default function ContentCards({ onQuestionSelect }) {
   const cards = [
     {
       id: 1,
-      title: "Ready-made trails",
-      description: "Explore popular hiking routes in New Zealand.",
-      buttonText: "Explore trails",
-      image:
-        "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=250&fit=crop",
+      title: "New Zealand North Island",
+      description:
+        "Discover Auckland, Rotorua, Wellington and the North Island's volcanic landscapes, Maori culture, and stunning coastlines.",
+      buttonText: "Explore North Island",
+      image: northIslandImage,
+      question:
+        "What are the must-see attractions and activities on New Zealand's North Island?",
     },
     {
       id: 2,
-      title: "Multi-day journeys",
-      description: "Discover multi-day hikes for a longer adventure.",
-      buttonText: "See itineraries",
-      image:
-        "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=250&fit=crop",
+      title: "New Zealand South Island",
+      description:
+        "Experience Queenstown, Fiordland, Southern Alps and the South Island's dramatic mountains, lakes, and adventure activities.",
+      buttonText: "Explore South Island",
+      image: southIslandImage,
+      question:
+        "What are the best hiking trails and scenic spots on New Zealand's South Island?",
     },
     {
       id: 3,
-      title: "South Island",
-      description: "Find trails on New Zealand's South Island.",
-      buttonText: "View region",
-      image:
-        "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=250&fit=crop",
+      title: "Travel Tips for New Zealand",
+      description:
+        "Essential travel information including visa requirements, weather, transportation, and cultural etiquette for visiting New Zealand.",
+      buttonText: "Get Travel Tips",
+      image: aucklandImage,
+      question:
+        "What are the essential travel tips and things to know before visiting New Zealand?",
     },
   ];
+
+  const handleButtonClick = (question) => {
+    if (onQuestionSelect) {
+      onQuestionSelect(question);
+    }
+  };
 
   return (
     <div style={styles.container}>
@@ -39,7 +54,20 @@ export default function ContentCards() {
             <div style={styles.content}>
               <h3 style={styles.title}>{card.title}</h3>
               <p style={styles.description}>{card.description}</p>
-              <button style={styles.button}>{card.buttonText}</button>
+              <button
+                style={styles.button}
+                onClick={() => handleButtonClick(card.question)}
+                onMouseEnter={(e) => {
+                  e.target.style.backgroundColor = "#f0f0f0";
+                  e.target.style.transform = "translateY(-1px)";
+                }}
+                onMouseLeave={(e) => {
+                  e.target.style.backgroundColor = "#ffffff";
+                  e.target.style.transform = "translateY(0)";
+                }}
+              >
+                {card.buttonText}
+              </button>
             </div>
           </div>
         ))}

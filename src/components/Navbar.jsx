@@ -11,12 +11,12 @@ export default function Navbar() {
   const [isClosing, setIsClosing] = useState(false);
 
   const menuItems = [
-    "Explore Trails",
-    "Destinations",
-    "Blog",
-    "About",
-    "Contact",
-    "Back to Home",
+    // "Explore Trails",
+    // "Destinations",
+    // "Blog",
+    // "About",
+    // "Contact",
+    // "Back to Home",
   ];
 
   const toggleMobileMenu = () => {
@@ -61,7 +61,7 @@ export default function Navbar() {
           </div>
 
           {/* Mobile Hamburger Menu */}
-          <div className="mobile-menu-toggle" style={styles.mobileMenuToggle}>
+          {/* <div className="mobile-menu-toggle" style={styles.mobileMenuToggle}>
             {isMobileMenuOpen ? (
               <CloseOutlined
                 className="hamburger-close"
@@ -75,7 +75,7 @@ export default function Navbar() {
                 onClick={toggleMobileMenu}
               />
             )}
-          </div>
+          </div> */}
         </div>
 
         {/* Mobile Menu Dropdown */}

@@ -85,6 +85,13 @@ export default function Chat() {
     }
   };
 
+  // Handle content card button clicks - populate input field
+  const handleContentCardClick = (question) => {
+    if (inputRef.current) {
+      inputRef.current.setValue(question);
+    }
+  };
+
   // unified send handler (for default questions & input)
   const handleSend = async (text) => {
     if (!text?.trim()) return;
@@ -305,7 +312,7 @@ export default function Chat() {
 
             {/* Right Column - Content Cards */}
             <div className="sidebar-column" style={styles.sidebarColumn}>
-              <ContentCards />
+              <ContentCards onQuestionSelect={handleContentCardClick} />
             </div>
           </div>
         </div>
