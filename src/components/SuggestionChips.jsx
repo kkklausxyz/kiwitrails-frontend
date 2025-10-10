@@ -29,45 +29,18 @@ export default function SuggestionChips({ onSelect, disabled = false }) {
   };
 
   return (
-    <>
-      <style>{`
-        .suggestion-chips-container::-webkit-scrollbar {
-          display: none;
-        }
-        
-        .suggestion-chips-container {
-          -ms-overflow-style: none;
-          scrollbar-width: none;
-        }
-        
-        /* Mobile touch scrolling enhancements */
-        @media (max-width: 768px) {
-          .suggestion-chips-container {
-            -webkit-overflow-scrolling: touch;
-            scroll-behavior: smooth;
-            overscroll-behavior-x: contain;
-            overscroll-behavior-y: none;
-          }
-          
-          .suggestion-chips-container button {
-            touch-action: pan-x;
-            user-select: none;
-          }
-        }
-      `}</style>
-      <div className="suggestion-chips-container" style={styles.container}>
-        {suggestions.map((suggestion, index) => (
-          <button
-            key={index}
-            style={styles.chip}
-            onClick={() => handleClick(suggestion)}
-            disabled={disabled}
-          >
-            {suggestion}
-          </button>
-        ))}
-      </div>
-    </>
+    <div style={styles.container}>
+      {suggestions.map((suggestion, index) => (
+        <button
+          key={index}
+          style={styles.chip}
+          onClick={() => handleClick(suggestion)}
+          disabled={disabled}
+        >
+          {suggestion}
+        </button>
+      ))}
+    </div>
   );
 }
 
@@ -81,10 +54,6 @@ const styles = {
     borderBottom: "1px solid #e9ecef",
     overflowX: "auto",
     whiteSpace: "nowrap",
-    WebkitOverflowScrolling: "touch",
-    scrollBehavior: "smooth",
-    scrollbarWidth: "none",
-    msOverflowStyle: "none",
   },
   chip: {
     backgroundColor: "#ffffff",
@@ -99,7 +68,5 @@ const styles = {
     whiteSpace: "nowrap",
     flexShrink: 0,
     fontWeight: "400",
-    minWidth: "fit-content",
-    touchAction: "pan-x",
   },
 };

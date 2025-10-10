@@ -423,12 +423,15 @@ export default function Chat() {
             min-height: auto !important;
           }
           
-          /* Ensure suggestion chips container is stable */
+          /* Ensure suggestion chips container is stable and horizontally scrollable */
           .chat-interface-container > div:nth-of-type(2) {
             flex-shrink: 0 !important;
             min-height: auto !important;
             max-height: 80px !important;
-            overflow: hidden !important;
+            overflow-x: auto !important;
+            overflow-y: hidden !important;
+            -webkit-overflow-scrolling: touch !important;
+            width: 100% !important;
           }
           
           /* Enhanced mobile scrolling */
