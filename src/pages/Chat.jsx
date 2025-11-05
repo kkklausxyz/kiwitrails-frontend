@@ -32,6 +32,7 @@ export default function Chat() {
   const contentRef = useRef(null);
   const lastScrollTopRef = useRef(0);
   const inputRef = useRef(null);
+  const inputContainerRef = useRef(null);
 
   // Welcome screen animation effect
   useEffect(() => {
@@ -123,6 +124,20 @@ export default function Chat() {
   const handleContentCardClick = (question) => {
     if (inputRef.current) {
       inputRef.current.setValue(question);
+    }
+    
+    // Scroll to input box on mobile devices
+    if (window.innerWidth <= 768 && inputContainerRef.current) {
+      setTimeout(() => {
+        const inputRect = inputContainerRef.current.getBoundingClientRect();
+        const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+        const targetY = inputRect.top + scrollTop - 20; // 20px offset for better visibility
+        
+        window.scrollTo({
+          top: targetY,
+          behavior: "smooth",
+        });
+      }, 100); // Small delay to ensure input is populated
     }
   };
 
@@ -334,13 +349,15 @@ export default function Chat() {
                   )}
                 </div>
 
-                <InputArea
-                  ref={inputRef}
-                  onSend={handleSend}
-                  onStop={handleStop}
-                  prohibit={loading}
-                  isGenerating={isGenerating}
-                />
+                <div ref={inputContainerRef}>
+                  <InputArea
+                    ref={inputRef}
+                    onSend={handleSend}
+                    onStop={handleStop}
+                    prohibit={loading}
+                    isGenerating={isGenerating}
+                  />
+                </div>
               </div>
             </div>
 
