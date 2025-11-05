@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import throttle from "lodash/throttle";
+import { CloseOutlined } from "@ant-design/icons";
 import Layout from "../components/Layout";
 import ChatHeader from "../components/ChatHeader";
 import SuggestionChips from "../components/SuggestionChips";
@@ -33,6 +34,8 @@ export default function Chat() {
   const lastScrollTopRef = useRef(0);
   const inputRef = useRef(null);
   const inputContainerRef = useRef(null);
+  const chatColumnRef = useRef(null);
+  const [isChatFullscreen, setIsChatFullscreen] = useState(false);
 
   // Welcome screen animation effect
   useEffect(() => {
@@ -111,6 +114,65 @@ export default function Chat() {
       };
     }
   }, []);
+
+  // Prevent body scroll when chat is in fullscreen mode on mobile
+  useEffect(() => {
+    if (window.innerWidth > 768) return; // Only on mobile
+    
+    if (isChatFullscreen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isChatFullscreen]);
+
+  // Detect when chat interface enters viewport and enable fullscreen on mobile
+  useEffect(() => {
+    if (window.innerWidth > 768) return; // Only on mobile
+
+    const handleWindowScroll = throttle(() => {
+      if (!chatColumnRef.current) return;
+
+      const rect = chatColumnRef.current.getBoundingClientRect();
+      const windowHeight = window.innerHeight;
+      
+      // Check if chat interface is in the viewport
+      const isInViewport = rect.top < windowHeight && rect.bottom > 0;
+      
+      // Calculate how much of the chat interface top is visible
+      const topVisible = Math.max(0, windowHeight - rect.top);
+      const threshold = windowHeight * 0.2; // Trigger when 20% of top is visible
+      
+      // Enable fullscreen when chat interface enters viewport from top
+      if (isInViewport && topVisible > threshold && rect.top < windowHeight * 0.3) {
+        if (!isChatFullscreen) {
+          setIsChatFullscreen(true);
+        }
+      } 
+      // Disable fullscreen when scrolling up and chat interface is mostly out of view
+      else if (rect.top > windowHeight * 0.5 || rect.bottom < windowHeight * 0.3) {
+        if (isChatFullscreen) {
+          setIsChatFullscreen(false);
+        }
+      }
+    }, 150);
+
+    window.addEventListener("scroll", handleWindowScroll, { passive: true });
+    handleWindowScroll(); // Initial check
+
+    return () => {
+      window.removeEventListener("scroll", handleWindowScroll);
+    };
+  }, [isChatFullscreen]);
+
+  // Handle exit fullscreen
+  const handleExitFullscreen = () => {
+    setIsChatFullscreen(false);
+  };
 
   // Handle suggestion chip clicks - populate input field
   const handleSuggestionClick = (text) => {
@@ -316,11 +378,27 @@ export default function Chat() {
         <div className="main-content-wrapper" style={styles.mainContentWrapper}>
           <div className="main-container" style={styles.mainContainer}>
             {/* Left Column - Chat Interface */}
-            <div className="chat-column" style={styles.chatColumn}>
+            <div 
+              ref={chatColumnRef}
+              className={`chat-column ${isChatFullscreen ? 'chat-fullscreen' : ''}`}
+              style={styles.chatColumn}
+            >
               <div
-                className="chat-interface-container"
+                className={`chat-interface-container ${isChatFullscreen ? 'chat-interface-fullscreen' : ''}`}
                 style={styles.chatInterfaceContainer}
               >
+                {/* Exit fullscreen button - only visible in fullscreen mode */}
+                {isChatFullscreen && (
+                  <div style={styles.exitButtonContainer}>
+                    <button
+                      onClick={handleExitFullscreen}
+                      style={styles.exitButton}
+                      aria-label="Exit fullscreen"
+                    >
+                      <CloseOutlined style={styles.exitIcon} />
+                    </button>
+                  </div>
+                )}
                 <ChatHeader />
                 <SuggestionChips
                   onSelect={handleSuggestionClick}
@@ -422,16 +500,50 @@ export default function Chat() {
         
         /* Additional mobile optimizations */
         @media (max-width: 768px) {
+          .chat-column {
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
+            position: relative !important;
+          }
+          
+          .chat-column.chat-fullscreen {
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            right: 0 !important;
+            bottom: 0 !important;
+            width: 100vw !important;
+            height: 100vh !important;
+            z-index: 9999 !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            background-color: #f5f5f5 !important;
+          }
+          
           .chat-interface-container {
             min-height: 80vh !important;
             max-height: 80vh !important;
             position: relative !important;
             display: flex !important;
             flex-direction: column !important;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
+            border-radius: 12px !important;
+          }
+          
+          .chat-interface-container.chat-interface-fullscreen {
+            min-height: 100vh !important;
+            max-height: 100vh !important;
+            border-radius: 0 !important;
+            box-shadow: none !important;
+            border: none !important;
+          }
+          
+          .chat-fullscreen .content {
+            max-height: calc(100vh - 200px) !important;
           }
           
           .main-content-wrapper {
             padding: 5px !important;
+            transition: opacity 0.3s ease !important;
           }
           
           /* Fix suggestion chips from being squeezed */
@@ -472,6 +584,16 @@ export default function Chat() {
             flex-shrink: 0 !important;
           }
         }
+        
+        /* Exit button hover effect */
+        .chat-interface-container button[aria-label="Exit fullscreen"]:hover {
+          background-color: rgba(0, 0, 0, 0.7) !important;
+          transform: scale(1.1) !important;
+        }
+        
+        .chat-interface-container button[aria-label="Exit fullscreen"]:active {
+          transform: scale(0.95) !important;
+        }
       `}</style>
     </Layout>
   );
@@ -503,6 +625,32 @@ const styles = {
     flexDirection: "column",
     overflow: "hidden",
     minHeight: 0, // Allow flex shrinking
+  },
+  exitButtonContainer: {
+    position: "absolute",
+    top: "12px",
+    right: "12px",
+    zIndex: 10001,
+  },
+  exitButton: {
+    width: "40px",
+    height: "40px",
+    borderRadius: "50%",
+    border: "none",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    color: "#ffffff",
+    cursor: "pointer",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    transition: "all 0.2s ease",
+    outline: "none",
+    backdropFilter: "blur(10px)",
+    WebkitBackdropFilter: "blur(10px)",
+  },
+  exitIcon: {
+    fontSize: "18px",
+    color: "#ffffff",
   },
   chatContent: {
     flex: "1",
